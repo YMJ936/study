@@ -1,13 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<%
-  //deleteForm.jsp?num=2&pageNum=1
-  int num=Integer.parseInt(request.getParameter("num"));
-  String pageNum=request.getParameter("pageNum");
-  System.out.println("deleteForm.jsp의 매개변수확인");
-  System.out.println("num=>"+num+",pageNum=>"+pageNum);
-%>
 <html>
 <head>
 <title>게시판</title>
@@ -27,7 +20,8 @@
 <body bgcolor="#e0ffff">
 <center><b>글삭제</b>
 <br>
-<form method="POST" name="delForm"  action="deletePro.jsp" 
+<!-- 전송폼 action속성 변경 -->
+<form method="POST" name="delForm"  action="/JspBoard2/deletePro.do" 
    onsubmit="return deleteSave()"> 
  <table border="1" align="center" cellspacing="0" cellpadding="0" width="360">
   <tr height="30">
@@ -37,15 +31,15 @@
   <tr height="30">
      <td align=center >비밀번호 :   
        <input type="password" name="passwd" size="8" maxlength="12">
-	   <input type="hidden" name="num" value="<%=num%>">
-	   <input type="hidden" name="pageNum" value="<%=pageNum%>"> <!-- name:전달할 매개변수명, value:전달할 매개변수값 -->
+	   <input type="hidden" name="num" value="${num}">
+	   <input type="hidden" name="pageNum" value="${pageNum}"> <!-- name:전달할 매개변수명, value:전달할 매개변수값 -->
 	   </td>
  </tr>
  <tr height="30">
     <td align=center bgcolor="#b0e0e6">
       <input type="submit" value="글삭제" >
       <input type="button" value="글목록" 
-       onclick="document.location.href='list.jsp?pageNum=2'">     
+       onclick="document.location.href='/JspBoard2/list.do?pageNum=${pageNum}'">     
    </td>
  </tr>  
 </table> 

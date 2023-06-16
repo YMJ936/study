@@ -26,7 +26,7 @@
 	     ${article.writer}</td>
     <td align="center" width="125" bgcolor="#b0e0e6" >작성일</td>
     <td align="center" width="125" align="center">
-	     ${article.getReg_date()}</td>
+	     ${article.reg_date}</td>
   </tr>
   <tr height="30">
     <td align="center" width="125" bgcolor="#b0e0e6">글제목</td>
@@ -40,13 +40,13 @@
   <tr height="30">      
     <td colspan="4" bgcolor="#b0e0e6" align="right" > 
 	  <input type="button" value="글수정" 
-       onclick="document.location.href='/JspBoard2/updateForm.jsp?num=${article.num}&pageNum=${pageNum}'">
+       onclick="document.location.href='/JspBoard2/updateForm.do?num=${article.num}&pageNum=${pageNum}'">
 	   &nbsp;&nbsp;&nbsp;&nbsp;
 	  <input type="button" value="글삭제" 
-       onclick="document.location.href='/JspBoard2/deleteForm.jsp?num=${article.num}&pageNum=${pageNum}'">
+       onclick="document.location.href='/JspBoard2/deleteForm.do?num=${article.num}&pageNum=${pageNum}'">
 	   &nbsp;&nbsp;&nbsp;&nbsp;
       <input type="button" value="답글쓰기" 
-       onclick="document.location.href='/JspBoard2/writeForm.do?num=${num}&ref=${ref}&re_step=${re_step}&re_level=${re_level}'">
+       onclick="document.location.href='/JspBoard2/writeForm.do?num=${article.num}&ref=${article.ref}&re_step=${article.re_step}&re_level=${article.re_level}'">
 	   &nbsp;&nbsp;&nbsp;&nbsp;
        <input type="button" value="글목록" 
        onclick="document.location.href='/JspBoard2/list.do?pageNum=${pageNum}'"> 

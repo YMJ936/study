@@ -9,6 +9,7 @@
  // int count=(Integer)request.getAttribute("count"); // => ${count} 이것도 같다.
   
 %>
+<!-- list.jsp의 백업파일 -->
 <html>
 <head>
 <title>게시판</title>
@@ -73,7 +74,6 @@
   </tr>
   </c:forEach>
 </table>
-<p>
 <!-- 페이징처리(계산) -->
 </c:if>
 <c:if test="${count>0}">
@@ -95,17 +95,6 @@
 		<a href="/JspBoard2/list.do?pageNum=${startPage+blockSize}">[다음]</a>
 	</c:if>
 </c:if>
-<p>
-<!-- 전달할 값은 테이블의 필드와 같이 설정할 것  -->
-<form name="test" action="/JspBoard2/list.do">
-	<select name="search">
-		<option value="subject">제목</option>
-		<option value="subject_content">제목+본문</option>
-		<option value="writer">작성자</option>
-	</select>
-	<input type="text" size="15" name="searchtext">&nbsp;
-	<input type="submit" value="검색">
-</form>
 </center>
 </body>
 </html>
