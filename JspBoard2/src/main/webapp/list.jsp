@@ -7,7 +7,8 @@
   //Object->Integer->Int
  // int currentPage=(Integer)request.getAttribute("currentPage"); //기본원리 -> 그러나 el쓰는게 훨씬 편함
  // int count=(Integer)request.getAttribute("count"); // => ${count} 이것도 같다.
-  
+  //Hashtable pgList=(Hashtable)request.getAttribute("pgList"); =>${pgList}
+ //pgList.get("count")=>${pgList.count}
 %>
 <html>
 <head>
@@ -15,7 +16,7 @@
 <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#e0ffff">
-<center><b>글목록(전체 글:${count})</b>
+<center><b>글목록(전체 글:${pgList.count})</b>
 <table width="700">
 <tr>
     <td align="right" bgcolor="#b0e0e6">
@@ -24,14 +25,14 @@
 </tr>
 </table>
 <!-- 테이블에 출력(데이터의 유무) -->
-<c:if test="${count==0}">
+<c:if test="${pgList.count==0}">
 	<table border="1" width="700" cellpadding="0" cellspacing="0" align="center">
 		<tr>
 			<td align="center">게시판에 저장된 글이 없습니다.</td>
 		</tr>
 	</table>
 	</c:if>
-<c:if test="${count>0}">
+<c:if test="${pgList.count>0}">
 <table border="1" width="700" cellpadding="0" cellspacing="0" align="center"> 
     <tr height="30" bgcolor="#b0e0e6"> 
       <td align="center"  width="50"  >번 호</td> 
@@ -42,8 +43,9 @@
       <td align="center"  width="100" >IP</td>    
     </tr>
     <!-- 실질적으로 레코드를 출력시켜주는 부분 -->
+    <c:set var="number" value="${pgList.number}" />
       <c:forEach var="article" items="${articleList}">
-   <tr height="30">
+   <tr height="30" onmouseover="this.style.backgroundColor='white'" onmouseout="this.style.backgroundColor='#e0ffff'" >
     <td align="center"  width="50" >
     	<c:out value="${number}" />
     	<c:set var="number" value="${number-1}" />
@@ -59,7 +61,7 @@
 	  	<img src="images/level.gif" width="${7*article.re_level}" height="16">
 	  <!-- num(게시물번호),pageNum(페이지번호) 이 둘은 항상 따라다닌다. -->
 	  </c:if>
-      <a href="/JspBoard2/content.do?num=${article.num}&pageNum=${currentPage}">
+      <a href="/JspBoard2/content.do?num=${article.num}&pageNum=${pgList.currentPage}">
       		${article.subject}</a>
       	<c:if test="${article.readcount>=20}">
          <img src="images/hot.gif" border="0"  height="16"> 
@@ -67,7 +69,11 @@
          </td>
     <td align="center"  width="100"> 
        <a href="mailto:${article.email}">${article.writer}</a></td>
-    <td align="center"  width="150">${article.reg_date}</td>
+    <td align="center"  width="150">
+    	<fmt:formatDate value="${article.reg_date}"
+    			timeStyle="medium"
+    			pattern="yy.MM.dd (hh:mm)" />
+    </td>
     <td align="center"  width="50">${article.readcount}</td>
     <td align="center" width="100" >${article.ip}</td>
   </tr>
@@ -76,25 +82,25 @@
 <p>
 <!-- 페이징처리(계산) -->
 </c:if>
-<c:if test="${count>0}">
-	<c:set var="pageCount" value="${count/pageSize+(count%pageSize==0?0:1)}" />
-	<c:set var="startPage" value="${currentPage-((currentPage-1)%blockSize)}" />
-	<c:set var="endPage" value="${startPage+blockSize-1}" />
-	<c:if test="${endPage > pageCount}">
-		<c:set var="endPage" value="${endPage=pageCount}" />
-	</c:if>
-	<c:if test="${startPage > blockSize}">
-		<a href="/JspBoard2/list.do?pageNum=${startPage-blockSize}">[이전]</a>
+	
+	<c:if test="${pgList.startPage > pgList.blockSize}">
+		<a href="/JspBoard2/list.do?pageNum=${pgList.startPage-pgList.blockSize}&search=${search}&searchtext=${searchtext}">[이전]</a>
 	</c:if>
 	
-	<c:forEach var="i" begin="${startPage}" end="${endPage}">
-		<a href="/JspBoard2/list.do?pageNum=${i}">[${i}]</a>
+	<c:forEach var="i" begin="${pgList.startPage}" end="${pgList.endPage}">
+		<a href="/JspBoard2/list.do?pageNum=${i}&search=${search}&searchtext=${searchtext}">
+			<c:if test="${pgList.currentPage==i}">
+				<font color="red"><b>[${i}]</b></font>
+			</c:if>
+			<c:if test="${pgList.currentPage!=i}">
+				${i}
+			</c:if>
+			</a>
 	</c:forEach>
 	
-	<c:if test="${endPage < blockSize}">
-		<a href="/JspBoard2/list.do?pageNum=${startPage+blockSize}">[다음]</a>
+	<c:if test="${pgList.endPage < pgList.pageCount}">
+		<a href="/JspBoard2/list.do?pageNum=${pgList.startPage+pgList.blockSize}&search=${search}&searchtext=${searchtext}">[다음]</a>
 	</c:if>
-</c:if>
 <p>
 <!-- 전달할 값은 테이블의 필드와 같이 설정할 것  -->
 <form name="test" action="/JspBoard2/list.do">

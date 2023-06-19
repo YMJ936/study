@@ -4,6 +4,7 @@ package ymj.board;
 // BoardDTO (매개변수, 반환형으로 사용 또는 데이터를 담는역할(출력))
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*; // ArrayList
 public class BoardDAO {
 	// 10개 생성-> 커넥션풀(pool)
@@ -135,6 +136,111 @@ public class BoardDAO {
 		}
 		return articleList; // 최대 10개=> list.jsp => for문=> 필드출력
 	}
+	
+	
+	
+	///(2)검색어에 따른 레코드의 범위지정에 대한 메서드///////////////////////////////////////////////////////////////////////////////// 
+	//    ->메서드 오버로딩 기법을 써도 되지만 헷갈리니 걍 메서드명 바꾸기
+	public List getBoardArticles (int start, int end, String search, String searchtext) {
+		List articleList = null; // ArrayList<BoardDTO> articleList=null; 이렇게 써도됨
+		
+		try {
+			con = pool.getConnection();
+			//----------------------------------------------------------------- 오류가 나온다면 여기서 발생할 것
+			if(search==null || search=="") {
+				sql="select * from board order by ref desc, re_step limit ?,?";
+			}else {//(제목, 작성자, 제목+본문)
+				if(search.equals("subject_content")) {
+					sql = "select * from board where subject like '%"+searchtext+"%' or content like '%"+searchtext+"%' order by ref desc, re_step limit ?,?";
+				}else { // 제목,작성자 -> 매개변수를 이용해서 하나의 sql 통합
+					sql = "select * from board where "+search+" like '%"+searchtext+"%' order by ref desc, re_step limit ?,?";
+				}
+			}
+			System.out.println("getBoardArticles()의 sql=>"+sql); //디버깅 코딩
+			//----------------------------------------------------------------- limit -> between A and B와 같다.
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, start-1); // mysql은 레코드순번 내부적으로 0부터시작
+			pstmt.setInt(2, end); // 불러와서 담을 갯수(10,15,20,,,)
+			rs = pstmt.executeQuery();
+			// 누적의 개념
+			if (rs.next()) {// 보여주는 레코드가 이미 있다면
+				articleList = new ArrayList(end); // end 갯수만큼 데이터공간 생성
+				do {
+					BoardDTO article = makeArticleFromResult();
+					// 추가
+					articleList.add(article); // 생략시 데이터저장불가 꼭 넣을것! for문에서 null값 떨어짐
+					
+				}while (rs.next());
+			}
+		}catch (Exception e) {
+			System.out.println("getBoardArticles() 에러유발=>"+e);
+		}finally {
+			pool.freeConnection(con, pstmt);
+		}
+		return articleList; // 최대 10개=> list.jsp => for문=> 필드출력
+	}
+	///(3)페이징 처리 계산 정리해주는 메서드(ListAction)/////////////////////////////////////////////////////////////////////////////////
+	public Hashtable pageList(String pageNum,int count) {
+		//1.페이징 처리결과를 저장할 Hashtable객체를 선언
+		Hashtable<String,Integer>pgList=new Hashtable<String,Integer>();
+		//ListAction,list.jsp(모델1)소스코드 일부를 복사
+		//1./list.jsp에서 처리했던 자바코드를 대신처리-결과를 request객체에 담아서 list.jsp에 전달해주면 끝
+		 int pageSize=10;//numPerPage->페이지당 보여주는 게시물수(=레코드수)
+		 int blockSize=3;//pagePerBlock->블럭당 보여주는 페이지수 10
+		 
+
+			//게시판을 처음 실행시키면 무조건 1페이지부터 출력
+			//->가장 최근의 글이 나오게 설정
+			if(pageNum==null){
+				pageNum="1";//default(무조건 1페이지 설정)
+			}
+			//nowPage(현재페이지(클릭해서 보고있는 페이지))
+			int currentPage=Integer.parseInt(pageNum);//"1"->1  "문자열"->숫자
+			//시작레코드번호
+			//                  (1-1)*10+1,(2-1)*10+1=11,(3-1)*10+1=21
+			int startRow=(currentPage-1)*pageSize+1;
+			int endRow=currentPage*pageSize;//종료 레코드번호
+			//						1*10,2*10=20,3*10=30
+			int number=0;//beginPerPage->페이지별로 시작하는 맨처음에 나오는 게시물번호
+			System.out.println("현재 레코드 수(count)=>"+count);
+			
+			number=count-(currentPage-1)*pageSize;
+			System.out.println("페이지별 number=>"+number);
+			
+			 //1.총페이지수 구하기
+			   //                    122/10=12.2+1.0=13.2=13,(122%10)=1
+			   int pageCount=count/pageSize+(count%pageSize==0?0:1);
+			   //2.시작페이지
+			   int startPage=0;
+			   if(currentPage%blockSize!=0){//1~9,11~19,21~29
+			      startPage=currentPage/blockSize*blockSize+1;
+			   }else{//10%10=0,(10,20,30,40~)
+					             //((10/10)-1)*10+1=1, 20=>11
+				  startPage=((currentPage/blockSize)-1)*blockSize+1; 
+			   }
+			   //종료페이지
+			   int endPage=startPage+blockSize-1;//1+10-1=10,11+10-1=20
+			   System.out.println
+			    ("startPage=>"+startPage+",endPage="+endPage);
+			   //블럭별로 구분해서 링크걸어서 출력
+			   //     11     >          10      //마지막페이지=총페이지수
+			   if(endPage > pageCount)  endPage=pageCount;
+			   //페이징처리에 대한 계산결과->Hashtable,HashMap
+			   //=>ListAction에 전달->list.jsp에 전달(화면출력)
+			   pgList.put("pageSize",pageSize); //${pageSize} -> 달러 키명을 사용하기 위해서 키값과 벨류값을 같게 준다.
+			   pgList.put("blockSize",blockSize);
+			   pgList.put("currentPage",currentPage);
+			   pgList.put("startRow",startRow);
+			   pgList.put("endRow",endRow);
+			   pgList.put("count",count);
+			   pgList.put("number",number);
+			   pgList.put("startPage",startPage);
+			   pgList.put("endPage",endPage);
+			   pgList.put("pageCount",pageCount);
+		
+		return pgList;
+	}
+	////////////////////////////////////////////////////////////////////////////////////
 	// 게시판의 글쓰기 및 답변달기
 	// insert into board values(?,,,
 	public void insertArticle(BoardDTO article) {
