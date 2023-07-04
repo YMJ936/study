@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 
+	개발자가 필요로 하는 객체를 생성 -> 클래스명 객체명=new 클래스명();
+	형식) <bean id="객체를 구분하는 인자(id는 절대 객체이름이 아니다)"
+					  class="패키지명...생성시키고자 하는 클래스명"></bean> 
+	bean은 땅콩 beans 땅콩들
+ -->
+<!-- <bean id="test" class="spring.Message1" /> -->
+<!-- 						아~ spring컨테이너 안에 있는 Message1 객체를 만들란 소리구나	 -->
+<bean id="test2" class="spring.Message1" />
+
+</beans>

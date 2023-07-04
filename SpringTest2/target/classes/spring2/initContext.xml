@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 태그와 태그 사이에는 주석을 달지 않는게 원칙이다. -->
+<!-- 생성자를 통해 값을 넣을 경우 시작태그, 종료태그 필요 < /> 이렇게 한번에 안됨 -->
+<bean id="mBean" class="spring2.MessageBeanImplDI">
+
+	<constructor-arg index="0">
+	  <value>대한민국</value>
+	</constructor-arg>
+	
+	<constructor-arg index="1">
+	  <value>서울</value>
+	</constructor-arg>
+	
+	<property name="greeting">
+		<value>안녕,</value>
+	</property>
+</bean>
+
+</beans>
