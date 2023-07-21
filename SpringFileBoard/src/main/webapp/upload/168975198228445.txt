@@ -1,0 +1,25 @@
+/* 회원정보 */
+CREATE TABLE MEMBER (
+	id VARCHAR2(20) NOT NULL, /* 아이디 */
+	pw VARCHAR2(20) NOT NULL, /* 비밀번호 */
+	name VARCHAR2(20) NOT NULL, /* 이름 */
+	phone NUMBER NOT NULL, /* 전화번호 */
+	zipcode VARCHAR2(7) NOT NULL, /* 우편번호 */
+	address VARCHAR2(600), /* 주소 */
+	address_Detail VARCHAR2(100), /* 상세주소 */
+	nickname VARCHAR2(16) NOT NULL, /* 닉네임 */
+	email VARCHAR2(30) NOT NULL, /* 이메일 */
+	joindate DATE NOT NULL /* 가입일자 */
+);
+
+CREATE UNIQUE INDEX PK_MEMBER
+	ON MEMBER (
+		id ASC
+	);
+
+ALTER TABLE MEMBER
+	ADD
+		CONSTRAINT PK_MEMBER
+		PRIMARY KEY (
+			id
+		);

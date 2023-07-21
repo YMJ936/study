@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       
+<!-- @Autowired 사용을 위해 -->
+    <context:annotation-config/> 
+ 
+ 	<!-- DB설정 -->
+ 	<bean class="com.board.dao.BoardDaoImpl"/>
+ 	<bean class="com.board.controller.ListController"/>
+ 	<bean class="com.board.controller.WriteController"/>
+ 	<bean class="com.board.controller.DetailController"/>
+ 	
+ 	<bean id="downloadView" class="com.board.view.DownloadView" />
+ 	
+ 	  <!-- tiles (ViewResolver)설정 -->
+    <bean id="tilesConfigurer" 
+      class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/tiles-def/tilesdef.xml</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!--  비슷한기능을 가진 두개의 빈즈 = UrlBasedViewResolver 와BeanNameViewResolver
+    		둘중에 어떤걸 먼저 실행시킬것이냐 우선순위를 지정
+    		order(뷰를 보여주는 우선순위를 지정해주는 멤버변수)
+    	   setOrder(1) 지정 -->
+    <bean id="viewResolver" 
+     class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass"
+         value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+        <property name="order" value="1"/>
+    </bean>
+    
+    <!-- 파일다운로드뷰를 위한 전용 viewResolver를 빈즈로 등록 -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"
+    		  p:order="0"/>
+    <!-- 리소스 번들 설정(글쓰기와 연관)
+    		웹상에서 공통으로 출력할 문자열이나 에러메세지를 미리 등록해서
+    		필요로 했을때 특정위치에 출력시켜주는 파일 
+    
+    		1.jdbc.properties (DB) 
+    		2.공통문자열을 파일로 저장
+    		3.유효성검사를 위한 에러메세지 등록
+    		형식) messages(패키지명).label(불러올파일명).properties(생략)
+    -->
+    
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    	<property name="basenames">
+    		<list>
+    			<value>messages.label</value>
+    			<value>messages.validation</value>
+    		</list>
+    	</property>
+    	<!-- 요즘에는 이런식으로 utf-8로 파일 저장한 후 바로 출력
+    	<property name="defaultEncoding" value="utf-8"/> 
+    	-->
+    </bean>
+    
+    <!-- 파일업로드 commons-fileupload
+    CommonsMultipartResolver->업로드를 관여하는 클래스
+    	maxUploadSize(최대 업로드 크기를 지정)   => 52428800 (byte 단위) = 51200kb = 50mb 
+    	defaultEncoding(한글처리 부분설정)
+    	50mb -> 10mb 로 바꾸고 싶다면 나누기 5
+    -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="maxUploadSize" value="52428800"/>
+    	<property name="defaultEncoding" value="utf-8"/>
+    </bean>
+    
+    
+    
+    <!-- 예외페이지 작성 
+    SimpleMappingExceptionResolver
+    웹상에서 에러유발-> 개발자가 작성한 예외처리페이지를 찾아서 출력
+    <props>
+    	<prop key="발생한 예외처리 클래스명">예외처리페이지명</prop>
+    </props>
+    예외처리페이지명.jsp 가 아닌 페이지명만 
+    -->
+    
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    	<property name="exceptionMappings">
+    		<props>
+    			<prop key="java.lang.Exception">pageError</prop>
+    		</props>
+    	</property>
+    </bean>
+    
+</beans>
+

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+    
+<mapper namespace="Board">  
+ <!-- 1.springboard2테이블에서 SQL작업(글목록보기) 
+ 		검색창의 콤보박스에서 글쓴이,제목,작성자를 선택후 검색어 입력=> 동적매개변수 => where 태그 안에 작성한다.
+ 		springboard2에선 시퀀스를 부여했음 => seq
+ 		a.* 은 테이블의 별칭이름 => 서브쿼리를 이용해서 select를 세번썼는데 
+ 		select를 쓸때 select from 테이블명을 써야되는데 대신 a.*로 써서 안쪽의 검색결과를 a.*로 지칭함 (괄호끝에 a 써준다.)
+ 		(select결과가 테이블로나오기때문에) 
+ 		
+ -->
+ 	<select id="selectList" parameterType="map" resultType="BoardCommand">
+ 		select seq,writer,title,content,pwd,hit,regdate,filename from
+ 		(select a.*,rownum rnum from 
+ 			(select * from springboard2
+ 			<where>
+ 				<if test="keyWord!=null and keyField=='title' ">
+					title like '%' || #{keyWord} || '%' 				
+ 				</if>
+ 				<if test="keyWord!=null and keyField=='writer' ">
+					writer like '%' || #{keyWord} || '%'
+				</if>
+ 				<if test="keyWord!=null and keyField=='content' ">
+					content like '%' || #{keyWord} || '%'
+				</if>
+ 				<if test="keyWord!=null and keyField=='all' ">
+					title like '%' || #{keyWord} || '%' or
+					writer like '%' || #{keyWord} || '%' or
+					content like '%' || #{keyWord} || '%'
+				</if>
+ 			</where>
+ 			order by seq desc) a
+ 		) 
+ 		<![CDATA[
+ 		where rnum >=#{start} AND rnum <=#{end}
+ 		]]>
+ 	</select>
+ <!-- 2.검색어에 따른 해당하는 총 레코드 수 구하기(java.lang.Integer -> Integer -> int 셋 다 가능) -->
+ 	<select id="selectCount" parameterType="map" resultType="Integer">
+ 		select count(*) from springboard2
+ 		<where>
+ 				<if test="keyWord!=null and keyField=='title' ">
+					title like '%' || #{keyWord} || '%' 				
+ 				</if>
+ 				<if test="keyWord!=null and keyField=='writer' ">
+					writer like '%' || #{keyWord} || '%'
+				</if>
+ 				<if test="keyWord!=null and keyField=='content' ">
+					content like '%' || #{keyWord} || '%'
+				</if>
+ 				<if test="keyWord!=null and keyField=='all' ">
+					title like '%' || #{keyWord} || '%' or
+					writer like '%' || #{keyWord} || '%' or
+					content like '%' || #{keyWord} || '%'
+				</if>
+ 		</where>
+ 	</select>
+ 	
+ 	<!-- 최댓값  -->
+	<select id="getNewSeq" resultType="int">
+		select max(seq) from springboard2
+	</select>
+
+<!-- 글쓰기  mysql=> now(), oracle=> sysdate 
+		jdbcType=> DB에저장되는타입은 VARCHAR
+-->
+	<insert id="insertBoard" parameterType="BoardCommand">
+		insert into springboard2(seq,writer,title,content,pwd,hit,regdate,filename)
+		values(#{seq},#{writer},#{title},#{content},#{pwd},0,sysdate,#{filename,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 조회수 증가 java.lang.String   , String -->
+	<update id="updateHit" parameterType="Integer">
+		update springboard2 set hit=hit+1 where seq=#{seq}
+	</update>
+	
+	<!-- 자료실 레코드 한개반환 -->
+	<select id="selectBoard" parameterType="Integer" resultType="BoardCommand">
+		select * from springboard2 where seq=#{seq}
+	</select>
+	
+</mapper>
+
+
+

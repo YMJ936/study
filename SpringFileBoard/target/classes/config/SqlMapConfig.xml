@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+<!-- DB접속 후 특정테이블작업(기능별로 분리(패키지))
+		불러올 테이블의 정보를 간단하게 별칭으로 관리
+		최상위 패키지명.하위패키지명...불러올클래스명(VO or DTO)
+ -->
+
+	<typeAliases>
+	    <typeAlias alias="BoardCommand"  type="com.board.domain.BoardCommand"/>
+	</typeAliases>
+	
+	<!-- xml파일의 환경설정파일(테이블정보) CRUD,join
+			경로는  /로 구분  
+			. 은 java에서쓰는것.
+	 -->
+	<mappers>
+	    <mapper resource="com/board/dao/BoardMapper.xml"/>
+	</mappers>
+	
+	
+</configuration>
