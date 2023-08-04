@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+    
+<mapper namespace="Board">
+
+<!--1.springboard2 테이블에서 SQL작업(1.글목록보기)   -->  
+<select id="selectList" parameterType="map"  resultType="BoardVO">
+    select seq,writer,title,content,password,hit,regdate
+     	 from board
+</select>
+ 
+ <!--2.글쓰기 (sysdate,mysql(now()) 업로드하는 파일명만 ,jdbcType=VARCHAR(문자열) 추가-->
+ <insert id="insertBoard" parameterType="BoardVO">
+   insert into board(seq,writer,title,content,password,hit,regdate)
+   values(#{seq},#{writer},#{title},#{content},#{password},0,sysdate)
+ </insert>
+ 
+ <!--3.조회수 증가하기 java.lang.String=>String=>string(X) -->
+ <update id="updateHit" parameterType="Integer">
+    update board set hit=hit+1 where seq=#{seq}
+ </update>
+ 
+ <!--4.게시물번호에 따른 레코드 한개 상세보기  -->
+ <select id="selectBoard" parameterType="Integer" resultType="BoardVO">
+     select * from board where seq=#{seq}
+ </select>
+ 
+ <!-- 5.글삭제하기  -->
+ <delete id="deleteBoard" parameterType="Integer">
+    delete from board where seq=#{seq}
+ </delete>
+ 
+ <!-- 6.글수정하기 -->
+ 
+ 
+</mapper>
+
+
+
+
+
+
+

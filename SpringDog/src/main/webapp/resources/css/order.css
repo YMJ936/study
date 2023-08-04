@@ -1,0 +1,30 @@
+@charset "EUC-KR";
+
+        .form-control {
+            width: 300px;
+            height: 30px;
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .container3 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+  
+        }
+        .col-sm-2{
+        width: 100px;
+        height: 50px;
+        }
+        
+        .col-sm-4{
+         width: 400px;
+        height: 20px;
+        padding: 20px;
+        }
