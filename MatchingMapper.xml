@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+    
+<mapper namespace="Matching">
+
+<!-- SQL문 점검 한번 하기 -->
+
+<!--1.matching 테이블에서 SQL작업   -->
+<select id="selectList" parameterType="map"  resultType="matching">
+	select * from (select a.*,rownum rnum from (select * from matching
+							<where> 
+								<if test="viewType=='all'">
+									id=#{id} or dog_id=#{dog_id}
+								</if>
+								<if test="viewType=='send'">
+									id=#{id}
+								</if>
+								<if test="viewType=='receive'">
+									dog_id=#{dog_id}
+								</if>
+								<if test="viewType=='approved'">
+									m_level!='1'
+								</if>
+							</where>
+							order by m_num desc) a) 
+				<![CDATA[
+    where rnum >=#{start} AND rnum <=#{end}
+     ]]>
+</select>
+ 
+ <!-- 2.viewType에 해당하는 총레코드수 구하기 -->
+ <select id="selectCount" parameterType="map" resultType="int">
+		select count(*) from matching
+			<where>
+				<if test="viewType=='all'">
+					(id=#{id} or dog_id=#{dog_id})
+				</if>
+				<if test="viewType=='send'">
+					id=#{id}
+				</if>
+				<if test="viewType=='receive'">
+					dog_id=#{dog_id}
+				</if>
+				<if test="viewType=='approved'">
+					m_level!='1'
+				</if>
+			</where>
+ </select>
+ 
+ <!-- 3.한행만 가져오기 --> <!-- 이게 필요할까? 아마 바꿀듯 -->
+ <select id="selectLine" parameterType="map"  resultType="matching">
+	select * from matching where m_num=#{m_num}
+</select>
+ 
+ <!-- 4.최대값구하기  -->
+ <select id="getNewM_num" resultType="int">
+	select max(m_num) from matching
+ </select>
+ 
+ <!-- 5.예약신청 -->
+<insert id="requestMatching" parameterType="matching">
+	insert into matching(m_num,id,name,dog_id,dog_name,m_start,m_duration,m_date,m_level)
+	 values(#{m_num},#{id},#{name},#{dog_id},#{dog_name},#{m_start},#{m_duration},#{m_date},1)
+ </insert>
+ 
+ <!-- 6.예약승인, 산책시작, 산책완료 -->
+ <update id="levelUp" parameterType="int">
+	update matching set m_level=m_level+1 where m_num=#{m_num}
+ </update>
+ 
+ <!-- 7.확정된 산책 취소하기-->
+ <update id="cancelWalking" parameterType="int">
+	update matching set m_level=0 where m_num=#{m_num}
+ </update>
+ 
+ <!-- 8.예약신청 거절하기  -->
+ <delete id="rejectMatching" parameterType="int">
+	delete from matching where m_num=#{m_num}
+ </delete>
+ 
+ <!-- 9.예약시 같은날 나머지 예약 취소시키는 SQL문 --> <!-- 다시 한번 점검하기 -->
+ <delete id="trucMatching" parameterType="matching">
+	delete from matching where m_num!=#{m_num} and (m_date=#{m_date} and dog_id=#{dog_id})
+ </delete>
+ 
+ <!-- 10.아이디를 가지고 도그아이디 불러오기 -->
+ <select id="idtodog_id" parameterType="String" resultType="int">
+	select dog_id from dw_memberdog where id=#{id}
+ </select>
+ 
+ <!-- 11.아이디를 가지고 산책예약 날짜들 가져오기 -->
+ <select id="idtodate" parameterType="String" resultType="Date">
+	select date from matching where id=#{id}
+ </select>
+ 
+ <!-- 12.날짜를 넣어서 그 날에 산책예약이 없는 강아지들의 id 가져오기 / 지역설정은 추후에 하기 지역설정까지 할 여력이 없다-->
+ <select id="datetoid" parameterType="Date" resultType="int">
+	select dog_id from dw_memberdog where dog_id not in (select dog_id from matching where m_date=#{m_date} and (m_level=2 or m_level=3 or m_level=4)) 
+ </select>
+ 
+ <!-- 13.강아지들의 id를 넣어서 강아지들의 데이터와 회원의 데이터를 합친 데이터뭉치 리스트를 가져온다 -->
+ <select id="idtoid" parameterType="int" resultType="dog">
+	select d.dog_id,d.dog_name,m.id,m.address from dw_memberdog d inner join dw_member m on d.id = m.id where dog_id=1
+ </select>
+
+</mapper>
+
