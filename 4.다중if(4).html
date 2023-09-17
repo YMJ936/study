@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>4.다중if(4).html</title>
+  <!-- 
+     조건식에 따라서 처리할 문장이 하나이상인경우->다중 if
+	 ->너무 길명 실행속도가 느려진다.(ex 사다리 타기)
+
+         if(조건식) ------------변수,수식(계산식(관계,논리))
+		    수행1(참)
+
+		  else if(조건식2)
+		    수행2(참)
+		  else if(조건식3)
+		    수행3
+			,,,,
+		  else
+		    수행n(거짓)
+  -->
+ </head>
+ <body>
+   <script>
+   //조건식이 하나가 여러개 나오는 경우
+   //조건식1 or 조건식2 or 조건식3=>둘중의 하나가 참이면 무조건 참
+   /*              or        and =>두개가 참일경우에만 참
+     T   T         T          T
+	 T   F         T          F
+	 F   T         T          F
+	 F   F         F          F
+ if(numone>10 && numtwo<20)
+ 자료형(=type) 컴퓨터에게 문자를 저장할것인지 숫자를 저장할것인지를 알려주면서
+                     그 크기까지 알려주는 것(ex String,int,float,boolean)
+   */
+var qs=prompt("당신이 좋아하는 언어를 선택? 1.자바 2.자바스크립트 3.C언어");
+        if((qs=="자바") || (qs=="1"))//문자열상수
+			alert("당신의 자바를 좋아하시는군요!");
+		else if((qs=="자바스크립트") || (qs==2))
+			alert("당신은 자바스크립트를 선택했군요");
+		else//else if((qs=="C언어") || (qs==3))
+		    alert("C언어 선택하셨군요!");
+		
+   </script>
+  </body>
+ </html>

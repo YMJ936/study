@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>7.이벤트종류(7).html</title>
+  <!-- 
+    이벤트=>운영체제가 인식가능한 사용자들의 모든행동양식
+
+	1.click->마우스클릭(ex 버튼,링크문자열)->onclick="호출할함수명()"
+	2.load->제일먼저 문서(html)을 읽어들일때 발생->onload="호출할함수명()"
+    3.unload=>현재사이트->다른 사이트로 이동할때 발생 onunload="~")IE
+	4.change->콤보박스에서 특정한 항목을 선택했을때 발생->onChange="~"
+	5.mouseover->특정항목에 마우스를 갖다대면 발생->onmouseover
+	6.mouseout->특정항목에 마우스를 벗어나면 발생 onmouseout
+	7.blur=>입력하는 경우(input type="text")커서가 이동할때 발생되는 이벤트
+	    onblur="~" 커서를 다음항목에 이동시키기전에 전의 데이터를 제대로 입력
+		                  했는지를 확인시켜주는 이벤트
+  -->
+ </head>
+ <body onload="alert('환영합니다.^^')"  onunload="alert('다음기회에 또')">
+    <a href="https://www.naver.com"
+	     onmouseover="document.img.src='../images/kid2.gif'"
+		 onmouseout="document.img.src='../images/kid.gif'">
+	     <img src="../images/kid.gif" name="img">
+   </a>
+   <img src="../images/kid3.gif"  name="img2">
+  </body>
+ </html>

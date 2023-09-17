@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>3.내장함수(confirm)(3).html</title>
+  <!-- 
+    형식) var 변수명=confirm("동의를 구하는 메세지");//매개변수 O ,반환값 O
+  -->
+ </head>
+ <body>
+   <script>
+		var result=confirm("정말로 탈퇴하시겠습니까?");//매개변수 O,반환값 O
+		// alert(result) 디버깅코딩(확인하는 구문을 작성)
+		//flow-chart
+		console.log(result);//콘솔에 출력시켜주는 객체 console.log(출력값)
+        if(result)//if(result==true)//확인버튼을 눌렀다면 true,false
+			alert("당신은 정상적으로 회원탈퇴\n처리되었습니다.");
+		else//취소->false
+			alert("회원탈퇴가 취소되었습니다.");//유효성검사->올바른값을 입력체크하는 규칙
+   </script>
+  </body>
+ </html>
